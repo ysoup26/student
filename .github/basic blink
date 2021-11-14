@@ -1,0 +1,13 @@
+//LED 점멸 제어 실습
+#include "mbed.h"
+
+DigitalOut led(LED1);
+
+int main(){
+    while(true){
+        led=1;
+        wait_ms(500);
+        led=0;
+        wait_ms(1000);
+    }
+}
