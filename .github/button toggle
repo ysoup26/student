@@ -1,0 +1,13 @@
+//푸시버튼 실습-토글
+#include "mbed.h"
+DigitalOut led(LED1);
+DigitalIn but(D2,PullUp);
+int state=0;
+int main(){
+    while(true){
+        if(!but){
+           led=!led;
+           wait_ms(300);
+        }    
+    }
+}
