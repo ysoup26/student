@@ -1,7 +1,7 @@
 //푸시버튼 실습
 #include "mbed.h"
 DigitalOut led(LED1);
-DigitalOut but(BUTTON1);
+DigitalIn but(BUTTON1);
 
 int main(){
     while(true){
