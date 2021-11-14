@@ -1,0 +1,13 @@
+//확률로 켜기 실습
+#include "mbed.h"
+DigitalOut led(LED1);
+
+int main(){
+    srand(time(NULL));
+    while(true){
+        //매번 난수 생성해서 led에 대입
+        float n=(float)rand()/RAND_MAX; //0부터 1사이의 f형 값
+        led=(n<0.1f) ? 1:0; //균등 분포:어느정도 일정함
+        wait_ms(10);
+    }
+}
