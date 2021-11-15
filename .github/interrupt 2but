@@ -1,0 +1,38 @@
+//인터럽트-카운터 클래스
+#include "mbed.h"
+
+class CounterUD{
+    InterruptIn _upBot,_downBot;
+    volatile uint16_t _count;
+    volatile bool _updated;
+    void plus(){
+        _count++;
+        _updated=1;
+    }
+    void minus(){
+        _count--;
+        _updated=1;
+    }
+public:
+CounterUD(PinName p1,PinName p2): _upBot(p2,PullUp), _downBot(p1,PullUp){
+    _count=0; _updated=0;
+    _upBot.fall(callback(this,&CounterUD::plus));
+    _downBot.fall(callback(this,&CounterUD::minus));
+    }
+    uint16_t read(){_updated=0; return _count;}
+    bool isUpdated() {return _updated;} 
+};
+
+CounterUD cnt(D2,D3);
+
+int main(){
+    while(true){
+        if(cnt.isUpdated()){
+            printf(" count = %3d\n",cnt.read());
+            wait_ms(100);
+        }
+    }
+}
+//error code: No instance of constructor "mbed::Interrupt::InterruptIn"
+//Error: No instance of constructor "mbed::InterruptIn::InterruptIn"  matches the argument list in "main.cpp", Line: 17, Col: 42
+
