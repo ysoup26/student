@@ -1,0 +1,154 @@
+package week12;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import javax.swing.*;
+
+public class FigureEditor {
+
+	public static void main(String[] args) {
+		new FigureEditorFrame();
+
+	}
+
+}
+
+class FigureEditorFrame extends JFrame {
+	PanelA panelA;
+	
+	FigureEditorFrame() {
+		setSize(500,300);
+		
+		panelA = new PanelA();
+		add(panelA, BorderLayout.CENTER);
+		
+		add(new PanelC(this), BorderLayout.WEST);
+		
+		setVisible(true);
+		
+	}
+	
+	
+}
+
+class PanelA extends JPanel {
+	String selectBtn;
+	Point start=null, end=null;
+	ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
+	PanelA() {
+		setBackground(Color.YELLOW);
+		//label = new JLabel("여기가 그래픽 객체를 그리는 곳입니다.");
+		//add(label);
+		MyMouseListener listener = new MyMouseListener();
+		
+		addMouseListener(listener);
+        addMouseMotionListener(listener);
+	}
+	class MyMouseListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e) {
+            start = e.getPoint();
+        }
+        public void mouseDragged(MouseEvent e) {
+            end = e.getPoint();
+            repaint(); // 패널의 그리기 요청 주목
+        }
+        public void mouseReleased(MouseEvent e) {
+        	end=e.getPoint();
+        	int x = Math.min(start.x, end.x);
+            int y = Math.min(start.y, end.y);
+            int width = Math.abs(start.x - end.x);
+            int height = Math.abs(start.y - end.y);
+            
+            Rectangle rect=new Rectangle(x,y,width,height);
+            rectangles.add(rect);
+            repaint();
+        }
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g); 
+        if(start == null) // 타원이 만들어지지 않았음
+            return;
+        g.setColor(Color.BLUE); // 파란색 선택
+        int x = Math.min(start.x, end.x);
+        int y = Math.min(start.y, end.y);
+        int width = Math.abs(start.x - end.x);
+        int height = Math.abs(start.y - end.y);
+        switch(selectBtn) {
+        case "사각":
+        	g.drawRect(x, y, width, height);
+        case "직선":
+        	g.drawOval(x, y, width, height);
+        case "타원":
+        	g.drawOval(x, y, width, height);
+        for (int i =0; i<rectangles.size(); i++) {
+       	 Rectangle rect = rectangles.get(i);
+       	 rect.draw(g);
+        }
+    }
+}
+
+class PanelB extends JPanel {
+	FigureEditorFrame topFrame;
+	
+	PanelB(FigureEditorFrame frame) {
+		this.topFrame = frame;
+		
+		setBackground(Color.BLUE);
+		setLayout(new GridLayout(3,1,5,5));
+		
+		JButton btn1 = new JButton("사각");
+		btn1.addActionListener(new MyActionListener());
+		add(btn1);
+		
+		JButton btn2 = new JButton("직선");
+		btn2.addActionListener(new MyActionListener());
+		add(btn2);
+		
+		JButton btn3 = new JButton("타원");
+		btn3.addActionListener(new MyActionListener());
+		add(btn3);
+		
+	}
+	
+	private class MyActionListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String actionCmd = e.getActionCommand();
+			//topFrame.panelA.label.setText(actionCmd);
+			topFrame.panelA.selectBtn=actionCmd;
+		}
+		
+	}
+}
+
+class PanelC extends JPanel {
+	PanelC(FigureEditorFrame frame) {
+		add(new PanelB(frame));
+	}
+}
+class Shape{
+	
+}
+class Circle{
+	
+}
+class Rectangle{
+	int x;
+	int y;
+	int width;
+	int height;
+	
+	public Rectangle(int x,int y,int width, int height) {
+		this.x=x;
+		this.y=y;
+		this.width=width;
+		this.height=height;
+	}
+	public void draw(Graphics g) {
+		g.drawRect(x,y,width,height);
+	}
+}
+}
