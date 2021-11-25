@@ -1,0 +1,33 @@
+	public static ArrayList<Student> loadDataFromFile(String fileName){ 
+		ArrayList<Student> result=new ArrayList<Student>();//반환할 객체 배열
+		String str; //파일을 한줄씩 읽어들일 변수
+		try {
+			BufferedReader inputStream=new BufferedReader(new FileReader(fileName));
+			while((str=inputStream.readLine())!=null) {//한 줄씩 읽음=Student 객체 하나
+				StringTokenizer st=new StringTokenizer(str," ");//공백기준으로 분리
+				ArrayList<String> strList=new ArrayList<String>();
+				while(st.hasMoreElements()) { //문자열 구분 클래스
+					strList.add(st.nextToken());//구분된 문자열이 차곡차곡 추가됨
+				}
+				//객체 생성을 위한 변수 및 초기화
+				String 학번=strList.get(0);
+				String 이름=strList.get(1);
+				String 학과=strList.get(2);
+				int 나이=Integer.parseInt(strList.get(3));
+				if(학번.contains("G")) {//학번에 G가 있음>>Graduation
+					String 학위과정=strList.get(4);
+					String 전공=strList.get(5);
+					result.add(new Graduate(학번,이름,학과,나이,학위과정,전공));
+				}else {//없으면 UnderGraduation
+					String 동아리=strList.get(4);
+					result.add(new UnderGraduate(학번,이름,학과,나이,동아리));
+				}
+			}
+			inputStream.close(); //스트림 닫음
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}  catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
