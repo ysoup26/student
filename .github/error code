@@ -1,0 +1,104 @@
+  const serverSelectionError = new ServerSelectionError();
+                               ^
+
+MongooseServerSelectionError: connect ECONNREFUSED ::1:27017
+    at NativeConnection.Connection.openUri (C:\Users\406\myapp\node_modules\mongoose\lib\connection.js:797:32)
+    at C:\Users\406\myapp\node_modules\mongoose\lib\index.js:332:10
+    at C:\Users\406\myapp\node_modules\mongoose\lib\helpers\promiseOrCallback.js:32:5   
+    at new Promise (<anonymous>)
+    at promiseOrCallback (C:\Users\406\myapp\node_modules\mongoose\lib\helpers\promiseOrCallback.js:31:10)
+    at Mongoose._promiseOrCallback (C:\Users\406\myapp\node_modules\mongoose\lib\index.js:1153:10)
+    at Mongoose.connect (C:\Users\406\myapp\node_modules\mongoose\lib\index.js:331:20)  
+    at Object.<anonymous> (C:\Users\406\myapp\routes\index.js:8:10)
+    at Module._compile (node:internal/modules/cjs/loader:1097:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1149:10) {       
+  reason: TopologyDescription {
+    type: 'Unknown',
+    servers: Map(1) {
+      'localhost:27017' => ServerDescription {
+        _hostAddress: HostAddress { isIPv6: 
+false, host: 'localhost', port: 27017 },    
+        address: 'localhost:27017',
+        type: 'Unknown',
+        hosts: [],
+        passives: [],
+        arbiters: [],
+        tags: {},
+        minWireVersion: 0,
+        maxWireVersion: 0,
+        roundTripTime: -1,
+        lastUpdateTime: 13971183,
+        lastWriteDate: 0,
+        error: MongoNetworkError: connect ECONNREFUSED ::1:27017
+            at connectionFailureError (C:\Users\406\myapp\node_modules\mongodb\lib\cmap\connect.js:293:20)
+            at Socket.<anonymous> (C:\Users\406\myapp\node_modules\mongodb\lib\cmap\connect.js:267:22)
+            at Object.onceWrapper (node:events:510:26)
+            at Socket.emit (node:events:390:28)
+            at emitErrorNT (node:internal/streams/destroy:164:8)
+            at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+            at processTicksAndRejections (node:internal/process/task_queues:83:21)
+      }
+    },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    logicalSessionTimeoutMinutes: undefined
+  }
+}
+
+Node.js v17.1.0
+[nodemon] app crashed - waiting for file changes before starting...
+[nodemon] restarting due to changes...
+[nodemon] starting `node app.js`
+Express server is running on port 4000
+C:\Users\406\myapp\node_modules\mongoose\lib\connection.js:797
+  const serverSelectionError = new ServerSelectionError();    
+                               ^
+
+MongooseServerSelectionError: connect ECONNREFUSED ::1:27017
+    at NativeConnection.Connection.openUri (C:\Users\406\myapp\node_modules\mongoose\lib\connection.js:797:32)
+    at C:\Users\406\myapp\node_modules\mongoose\lib\index.js:332:10
+    at C:\Users\406\myapp\node_modules\mongoose\lib\helpers\promiseOrCallback.js:32:5
+    at new Promise (<anonymous>)
+    at promiseOrCallback (C:\Users\406\myapp\node_modules\mongoose\lib\helpers\promiseOrCallback.js:31:10)
+    at Mongoose._promiseOrCallback (C:\Users\406\myapp\node_modules\mongoose\lib\index.js:1153:10)    
+    at Mongoose.connect (C:\Users\406\myapp\node_modules\mongoose\lib\index.js:331:20)
+    at Object.<anonymous> (C:\Users\406\myapp\routes\index.js:8:10)
+    at Module._compile (node:internal/modules/cjs/loader:1097:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1149:10) {
+  reason: TopologyDescription {
+    type: 'Unknown',
+    servers: Map(1) {
+      'localhost:27017' => ServerDescription {
+        _hostAddress: HostAddress { isIPv6: false, host: 'localhost', port: 27017 },
+        address: 'localhost:27017',
+        type: 'Unknown',
+        hosts: [],
+        passives: [],
+        arbiters: [],
+        tags: {},
+        minWireVersion: 0,
+        maxWireVersion: 0,
+        roundTripTime: -1,
+        lastUpdateTime: 14402464,
+        lastWriteDate: 0,
+        error: MongoNetworkError: connect ECONNREFUSED ::1:27017
+            at connectionFailureError (C:\Users\406\myapp\node_modules\mongodb\lib\cmap\connect.js:293:20)
+            at Socket.<anonymous> (C:\Users\406\myapp\node_modules\mongodb\lib\cmap\connect.js:267:22)            at Object.onceWrapper (node:events:510:26)
+            at Socket.emit (node:events:390:28)
+            at emitErrorNT (node:internal/streams/destroy:164:8)
+            at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+            at processTicksAndRejections (node:internal/process/task_queues:83:21)
+      }
+    },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    logicalSessionTimeoutMinutes: undefined
+  }
+}
+
+Node.js v17.1.0
+[nodemon] app crashed - waiting for file changes before starting...
