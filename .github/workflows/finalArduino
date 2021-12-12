@@ -1,0 +1,234 @@
+/*final project to Arduino*/
+//LineTrace && Obstacle Avoid
+#include <SoftwareSerial.h>
+#include <Ultrasonic.h>
+
+//bluetooth 연결
+int blueRx=4;
+int blueTx=5;
+unsigned char commandReadyFlag=0;
+unsigned char commandblue,power;
+SoftwareSerial mySerial(blueRx,blueTx); //소프트웨어 시리얼통신 포트 생성
+
+//color sensor sett
+#define BLACK 0
+#define WHITE 1
+int sensor0,sensor1; //sensor reading 0~1023
+int sensorLeft,sensorRight;// 왼-1 오-0
+
+//ultrasonic sett
+char trig=9;
+char echo=8;
+int distance;
+int cutDistance=13  ; //장애물과의 거리 설정
+Ultrasonic ultrasonic(trig,echo); // ultrasonic 객체 생성
+
+#define CW  1 
+#define CCW 0
+#define MOTOR_LEFT 0
+#define MOTOR_RIGHT 1
+
+const byte PWMA = 3;      // PWM control (speed) for motor A
+const byte PWMB = 11;     // PWM control (speed) for motor B
+const byte DIRA = 12;     // Direction control for motor A
+const byte DIRB = 13;     // Direction control for motor B
+/*****ㅔ*************************************************************/
+void setup() {
+  Serial.begin(9600);
+  mySerial.begin(9600);
+  setupArdumoto();
+}
+
+void loop() {
+  //Bluetooth comm
+  //readSensors();
+  communication();
+  //read
+  //Serial.println(commandblue);
+  if(commandblue==1){ //F: 앞으로
+    robotForward(100); 
+  }else if(commandblue==4){ //L:왼쪽
+    robotLeft(100,100); 
+  }else if(commandblue==3){ //R:오른쪽
+    robotRight(100,100); 
+  }else if(commandblue==2){ //B:멈춤
+    robotStop(); 
+  }else if(commandblue==5){//stop 누르면 시작
+    readSensors();
+    if(distance<cutDistance){
+      robotAvoidance();
+    }else{
+      Serial.println("라인트레이스");
+      robotControl(sensorLeft,sensorRight);
+    }
+  }else{
+    robotStop();
+  }
+}
+//모든 센서 측정
+void readSensors(){
+  readCSensors();
+  sensorRight = colorFinder(sensor0);
+  sensorLeft = colorFinder(sensor1);
+  //Serial.println(sensorRight);
+  //Serial.println(sensorLeft);
+  readUltraSensor();
+}
+//컬러 센서 측정-센서 정면 기준
+void readCSensors(){
+  sensor0=1023-analogRead(0);
+  sensor1=1023-analogRead(1);
+  Serial.println(sensor0);
+}
+char colorFinder(int sensorValue){
+  char color;
+  const int THRESHOLD=500;
+  if(sensorValue>THRESHOLD)
+    color=WHITE;
+  else
+    color=BLACK;
+  return color;
+}
+// 초음파 센서 측정
+void readUltraSensor(){
+   distance = ultrasonic.read();  // read distance in cm
+}
+
+//로봇 컨트롤
+void robotControl(int sensorLeft,int sensorRight){
+  static int count=0;
+  if(sensorLeft==BLACK && sensorRight==BLACK){
+    robotForward(100);
+  }else if(sensorLeft==BLACK && sensorRight==WHITE){
+    robotLeft(100,100);
+  }else if(sensorLeft==WHITE && sensorRight==BLACK){
+    robotRight(100,100);
+  }else 
+    if(count<2){//3번째전까진 멈추지 않고 전진
+      robotStop(); //오차 감소를 위한 정지 
+      delay(250);
+      robotForward(100);
+      findL();
+      Serial.print("count:");      
+      Serial.println(count);
+      count++;//찾으면 값 증가
+    }else{
+      robotStop();
+    }
+}
+//장애물과 만났을 때//배터리수치에 따라 회전방향, 속도 달라짐
+void robotAvoidance()
+{
+   robotStop();
+   delay(250);
+   robotRight(100,100); // 약 45 deg 
+   delay(380);
+   Serial.println("R");
+   robotStop();
+   delay(300); 
+   robotForward(100);  // 약 20 cm 
+   delay(1650);
+   Serial.println("F");
+   robotLeft(100,100);  // 약 80 deg
+   delay(450);
+   Serial.println("L");
+   robotStop();
+   delay(250); 
+   robotForward(100);
+   findL();//선 찾을때까지 직진
+}
+void findL(){
+  while(true){
+    readSensors();
+    if(sensorLeft==BLACK||sensorRight==BLACK){
+      //Serial.println("noFind");
+      break;
+    }
+    Serial.println("Find");
+    //robotForward(100);
+    delay(100);
+  }
+}
+
+/***********************setting*********************************************/
+//초기화 및 세팅
+void setupArdumoto()
+{
+  pinMode(PWMA, OUTPUT);
+  pinMode(PWMB, OUTPUT);
+  pinMode(DIRA, OUTPUT);
+  pinMode(DIRB, OUTPUT);
+  
+  digitalWrite(PWMA, LOW);
+  digitalWrite(PWMB, LOW);
+  digitalWrite(DIRA, LOW);
+  digitalWrite(DIRB, LOW);
+}
+/*로봇 주행*/
+void driveArdumoto(byte motor, byte dir, byte spd)
+{
+  if(motor == MOTOR_LEFT)
+  {
+    digitalWrite(DIRA, dir);
+    analogWrite(PWMA, spd);
+  }
+  else if(motor == MOTOR_RIGHT)
+  {
+    digitalWrite(DIRB, dir);
+    analogWrite(PWMB, spd);
+  }  
+}
+//전진 //초음파가 앞면이니 수정
+void robotForward(int velocity)
+{
+  driveArdumoto(MOTOR_LEFT, CW, velocity);
+  driveArdumoto(MOTOR_RIGHT, CCW, velocity);
+}
+//후진
+void robotBackward(int velocity)
+{
+  driveArdumoto(MOTOR_LEFT, CCW, velocity);
+  driveArdumoto(MOTOR_RIGHT, CW, velocity);
+}
+//우회전
+void robotRight(int velocity1,int velocity2)
+{
+  driveArdumoto(MOTOR_LEFT, CCW, velocity1);
+  driveArdumoto(MOTOR_RIGHT, CCW, velocity2);
+}
+//좌회전
+void robotLeft(int velocity1,int velocity2)
+{
+  driveArdumoto(MOTOR_LEFT, CW, velocity1);
+  driveArdumoto(MOTOR_RIGHT, CW, velocity2);
+}
+//로봇 정지
+void stopArdumoto(byte motor)
+{
+  driveArdumoto(motor, 0, 0);
+}
+void robotStop()
+{
+  stopArdumoto(MOTOR_LEFT);
+  stopArdumoto(MOTOR_RIGHT);
+}
+//Bluetooth communication 
+void communication(){
+  if(mySerial.available()>=4){//버퍼에 들어온 갯수-4바이트
+    //robotForward(50);
+    Serial.println("data arrived ");
+    unsigned char buffer[4];
+    //read data form buffer and save to array
+    for(char i=0;i<4;i++){
+      buffer[i]=mySerial.read();
+    }
+    if(buffer[0]==255&&buffer[3]==100){//데이터 전달 약속
+      commandblue=buffer[1];
+      power=buffer[2];
+      Serial.print("command:");
+      Serial.println(commandblue);
+      Serial.print("power:");
+      Serial.println(power);
+    }
+  }
+}
